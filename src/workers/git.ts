@@ -2,6 +2,7 @@ import LightningFS, { type PromisifiedFS } from '@isomorphic-git/lightning-fs';
 import http from 'isomorphic-git/http/web';
 import git, { TREE, WORKDIR, type WalkerEntry } from 'isomorphic-git';
 import { Buffer } from 'buffer/';
+import { PromisePool } from '@supercharge/promise-pool';
 
 (globalThis as any).Buffer = Buffer;
 
@@ -177,25 +178,42 @@ export class Git {
     return Object.assign(parent, { children: children.filter(({ type, children }) => !(type === 'tree' && !children?.length)) });
   }
 
-  private async copyDir(parentHandler: FileSystemDirectoryHandle, parentResult: WalkResult, state: { cur: number; total: number }) {
-    if (!parentResult.children) return;
+  private async copyDir(handler: FileSystemDirectoryHandle, result: WalkResult, state: { cur: number; total: number }) {
+    if (!result.children) return;
+    const tasks = await this.createCopyDirTasks(handler, result, state);
+    console.log(tasks.length);
+    await PromisePool.withConcurrency(navigator.hardwareConcurrency)
+      .for(tasks)
+      .handleError(console.error)
+      .process(func => func());
+  }
+
+  private async createCopyDirTasks(
+    parentHandler: FileSystemDirectoryHandle,
+    parentResult: WalkResult,
+    state: { cur: number; total: number },
+  ): Promise<Array<() => Promise<void>>> {
+    if (!parentResult.children) return [];
+    const tasks: Array<() => Promise<void>> = [];
     await Promise.all(
       parentResult.children.map(async result => {
         try {
           if (result.children) {
             const dirHandler = await parentHandler.getDirectoryHandle(result.name, { create: true });
-            await this.copyDir(dirHandler, result, state);
+            tasks.push(...(await this.createCopyDirTasks(dirHandler, result, state)));
           } else {
-            const content = await result.entry.content();
-            if (!content) return;
-            const fileHandler = await parentHandler.getFileHandle(result.name, { create: true });
-            const writable = await fileHandler.createWritable();
-            await writable.write(content);
-            await writable.close();
-            state.cur++;
-            this.onProgress({
-              value: state.total === 0 ? 1 : state.cur / state.total,
-              desc: `Write (${state.cur}/${state.total}): ${result.path}`,
+            tasks.push(async () => {
+              const content = await result.entry.content();
+              if (!content) return;
+              const fileHandler = await parentHandler.getFileHandle(result.name, { create: true });
+              const writable = await fileHandler.createWritable();
+              await writable.write(content);
+              await writable.close();
+              state.cur++;
+              this.onProgress({
+                value: state.total === 0 ? 1 : state.cur / state.total,
+                desc: `Write (${state.cur}/${state.total}): ${result.path}`,
+              });
             });
           }
         } catch (error) {
@@ -203,6 +221,7 @@ export class Git {
         }
       }),
     );
+    return tasks;
   }
 
   private async emitUpdateCommits() {

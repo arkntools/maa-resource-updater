@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@isomorphic-git/lightning-fs": "^4.6.0",
+    "@supercharge/promise-pool": "^3.2.0",
     "@vueuse/core": "^11.0.0",
     "buffer": "^6.0.3",
     "isomorphic-git": "^1.27.1",
