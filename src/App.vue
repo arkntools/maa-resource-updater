@@ -8,7 +8,8 @@
   <p class="text-center">
     GitHub: <a href="https://github.com/arkntools/maa-resource-updater" target="_blank">arkntools/maa-resource-updater</a>
   </p>
-  <p>首次使用 Tips：如果你本地的资源已经最新，那么可以直接点击“仅 clone / pull”，后续有更新时再用增量更新即可</p>
+  <p>Tips 首次使用：如果你本地的资源已经最新，那么可以直接点击“仅 clone / pull”，后续有更新时再用增量更新即可</p>
+  <p>Tips：由于是白嫖的服务所以你很可能需要挂代理不然 clone 的时候蜗牛爬</p>
   <table class="actions-table">
     <tr>
       <td class="step">1.</td>
