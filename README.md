@@ -4,6 +4,8 @@
 
 仅支持：Chrome ≥ 86, Edge ≥ 86, Opera ≥ 72
 
+https://github.com/user-attachments/assets/635b66a4-433a-42ca-befa-0208d2a6daff
+
 ## 原理
 
 [isomorphic-git](https://github.com/isomorphic-git/isomorphic-git) + [File System API](https://developer.mozilla.org/zh-CN/docs/Web/API/File_System_API)
