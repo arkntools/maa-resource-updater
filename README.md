@@ -1,6 +1,6 @@
 # MAA Resource Updater
 
-无需依赖任何第三方软件，纯靠浏览器工作的 [MAA 资源文件](https://github.com/arkntools/maa-resource-updater) 更新器
+无需依赖任何第三方软件，纯靠浏览器工作的 [MAA 资源文件](https://github.com/MaaAssistantArknights/MaaResource) 更新器
 
 仅支持：Chrome ≥ 86, Edge ≥ 86, Opera ≥ 72
 
