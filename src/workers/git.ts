@@ -3,6 +3,7 @@ import http from 'isomorphic-git/http/web';
 import git, { TREE, WORKDIR, type WalkerEntry } from 'isomorphic-git';
 import { Buffer } from 'buffer/';
 import { PromisePool } from '@supercharge/promise-pool';
+import { gitCORS, type GitCORS } from '@/utils/gitCORS';
 
 (globalThis as any).Buffer = Buffer;
 
@@ -46,7 +47,7 @@ export class Git {
       fs: this.fs,
       http,
       dir: '/',
-      corsProxy: import.meta.env.DEV ? 'http://127.0.0.1:9999' : 'https://mashir0-mrugcp.hf.space',
+      corsProxy: gitCORS.HuggingFace,
       url,
       singleBranch: true,
       depth: 1,
@@ -62,6 +63,10 @@ export class Git {
       },
     };
     this.emitUpdateCommits();
+  }
+
+  setCORSProxy(name: GitCORS) {
+    this.commonOptions.corsProxy = gitCORS[name];
   }
 
   async update() {
