@@ -91,7 +91,7 @@ import type { GitCommit, GitProgress } from './workers/git';
 import { gitCORS, type GitCORS } from './utils/gitCORS';
 
 const isProcessing = ref(false);
-const errorText = ref('');
+const errorText = ref(!window.showDirectoryPicker ? '悲报，你的浏览器不支持使用本更新器' : '');
 const gitProgress = ref<GitProgress>();
 const updateType = useLocalStorage<'full' | 'increment'>('updateType', 'full');
 const startCommit = useLocalStorage('startCommit', '');
