@@ -65,12 +65,6 @@
       <td class="actions">
         <button @click="gitCloneOrPullOnly" :disabled="isProcessing">仅 clone / pull</button>
         <button @click="gitClear" :disabled="isProcessing">清除 git 数据</button>
-        <span class="input-group">
-          <label for="git-cors-server" style="margin-right: 8px">后端</label>
-          <select id="git-cors-server" v-model="gitCORSServer" :disabled="isProcessing">
-            <option v-for="name in Object.keys(gitCORS)" :key="name" :value="name">{{ name }}</option>
-          </select>
-        </span>
       </td>
     </tr>
   </table>
@@ -97,7 +91,6 @@ const updateType = useLocalStorage<'full' | 'increment'>('updateType', 'full');
 const startCommit = useLocalStorage('startCommit', '');
 const editStartCommit = ref(false);
 const commitList = ref<GitCommit[]>([]);
-const gitCORSServer = useLocalStorage<GitCORS>('gitCORSServer', 'HuggingFace');
 
 const { dirHandle, pickDir } = useDirectoryPicker();
 
@@ -129,16 +122,6 @@ const gitClientPromise = createGitClient(
       startCommit.value = commits[commits.length - 1]?.sha1 || '';
     }
   }),
-);
-
-watch(
-  gitCORSServer,
-  async name => {
-    console.log('set', name);
-    const git = await gitClientPromise;
-    await git.setCORSProxy(name);
-  },
-  { immediate: true },
 );
 
 const beforeProcessing = () => {

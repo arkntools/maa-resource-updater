@@ -47,7 +47,7 @@ export class Git {
       fs: this.fs,
       http,
       dir: '/',
-      corsProxy: gitCORS.HuggingFace,
+      corsProxy: gitCORS.CloudflareWorker,
       url,
       singleBranch: true,
       depth: 1,
@@ -63,10 +63,6 @@ export class Git {
       },
     };
     this.emitUpdateCommits();
-  }
-
-  setCORSProxy(name: GitCORS) {
-    this.commonOptions.corsProxy = gitCORS[name];
   }
 
   async update() {
@@ -212,7 +208,7 @@ export class Git {
               if (!content) return;
               const fileHandler = await parentHandler.getFileHandle(result.name, { create: true });
               const writable = await fileHandler.createWritable();
-              await writable.write(content);
+              await writable.write(content as Uint8Array<ArrayBuffer>);
               await writable.close();
               state.cur++;
               this.onProgress({
